@@ -1,3 +1,9 @@
+<style>
+    .dropdown-toggle::after {
+        display: none;
+    }
+</style>
+
 <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top">
     <div class="container">
         <a class="navbar-brand" href="{{ route('home') }}">My Blogs</a>
@@ -11,7 +17,15 @@
                     <li class="nav-item dropdown dropdown-end" style="position: relative;">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            Welcome back, {{ auth()->user()->username }}
+                            <div>
+                                @php
+                                    $profileImage = Auth::user()->photo
+                                        ? asset('storage/' . Auth::user()->photo)
+                                        : asset('https://dummyimage.com/200x200/000/fff');
+                                @endphp
+                                <img src="{{ $profileImage }}" class="rounded-circle" alt="Bootstrap" width="35"
+                                    height="35">
+                            </div>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('auth.profile') }}">Profile</a>

@@ -11,6 +11,10 @@
             gap: 10px;
         }
 
+        #loading {
+            display: none;
+        }
+
         .btn-edit {
             border: none;
             background-color: lightblue;
@@ -40,35 +44,47 @@
         }
     </style>
 
-    <div class="profile-container">
-        <div>
-            <img src="https://dummyimage.com/200x200/000/fff" width="30" height="200" class="card-img-top" alt="...">
-        </div>
-        <div>
-            <form action="#" id="form-update">
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" value="{{ Auth::user()->username }}" disabled
-                        name="username">
+    <div>
+        <form action="#" id="form-update" enctype="multipart/form-data">
+            <div class="profile-container">
+                <div>
+                    <div>
+                        @php
+                            $profileImage = Auth::user()->photo
+                                ? asset('storage/' . Auth::user()->photo)
+                                : asset('https://dummyimage.com/200x200/000/fff');
+                        @endphp
+                        <img src="{{ $profileImage }}" alt="Bootstrap" width="200" height="200">
+                    </div>
+                    <input type="file" id="photo" name="photo" disabled accept="image/*"
+                        style="display: flex; justify-content: center" />
                 </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="text" class="form-control" id="email" value="{{ Auth::user()->email }}" disabled
-                        name="email">
+                <div>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" value="{{ Auth::user()->username }}"
+                            disabled name="username">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="email" value="{{ Auth::user()->email }}" disabled
+                            name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="number" class="form-control" id="phone" value="{{ Auth::user()->phone }}" disabled
+                            name="phone">
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" name="address" id="address" rows="3" disabled>{{ Auth::user()->address }}</textarea>
+                    </div>
+                    <button class="btn-edit" id="btn-edit">Edit Profile</button>
+                    <span id="loading">Loading....</span>
+                    <button type="submit" class="btn-submit" id="btn-submit">Submit</button>
                 </div>
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone</label>
-                    <input type="number" class="form-control" id="phone" value="{{ Auth::user()->phone }}" disabled
-                        name="phone">
-                </div>
-                <div class="mb-3">
-                    <label for="address" class="form-label">Address</label>
-                    <textarea class="form-control" name="address" id="address" rows="3" disabled>{{ Auth::user()->address }}</textarea>
-                </div>
-                <button class="btn-edit" id="btn-edit">Edit Profile</button>
-                <button type="submit" class="btn-submit" id="btn-submit">Submit</button>
-            </form>
-        </div>
+        </form>
+    </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -78,7 +94,7 @@
         $(document).ready(function() {
             $('#btn-edit').click(function(e) {
                 e.preventDefault();
-                $('#email, #username, #phone, #address').prop('disabled', false);
+                $('#email, #username, #phone, #address, #photo').prop('disabled', false);
 
                 $('#btn-edit').hide()
                 $('#btn-submit').show()
@@ -86,23 +102,36 @@
 
             $('#form-update').submit(function(e) {
                 e.preventDefault();
+                $('#loading').show();
 
-                $.ajax({
-                    url: "{{ route('profile.update') }}",
-                    type: 'POST',
-                    data: $(this).serialize(),
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    dataType: 'JSON',
-                    success: function(response) {
-                        if (response.success) {
-                            $('#email, #username, #phone, #address').prop('disabled', true);
-                        } else {
-                            console.log('error')
+
+                let form = this;
+                let formData = new FormData(form);
+
+                setTimeout(() => {
+                    $.ajax({
+                        url: "{{ route('profile.update') }}",
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        dataType: 'JSON',
+                        success: function(response) {
+                            if (response.success) {
+                                console.log(response)
+                                $('#email, #username, #phone, #address, #photo').prop(
+                                    'disabled', true);
+                                $('#loading').hide();
+                                window.location.reload();
+                            } else {
+                                console.log('error')
+                            }
                         }
-                    }
-                })
+                    })
+                }, 3000);
             })
         })
     </script>

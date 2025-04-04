@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
@@ -51,6 +52,7 @@ class LoginController extends Controller
             'email' => 'nullable|string|email|max:255|unique:users,email,' . Auth::id(),
             'phone' => 'nullable',
             'address' => 'nullable',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -65,11 +67,24 @@ class LoginController extends Controller
         $user->email = $request->email;
         $user->phone = $request->phone;
         $user->address = $request->address;
+
+        if ($request->hasFile('photo')) {
+            // Delete the old image if it exists
+            if ($user->photo) {
+                Storage::disk('public')->delete($user->photo);
+            }
+
+            // Store the new image
+            $path = $request->file('photo')->store('profile_images', 'public');
+            $user->photo = $path;
+        }
+
         $user->save();
 
         return response()->json([
             'success' => true,
             'message' => 'Profile updated successfully.',
+            // 'photoUrl' => $photo['filePath'],
             'data' => $user
         ]);
     }
