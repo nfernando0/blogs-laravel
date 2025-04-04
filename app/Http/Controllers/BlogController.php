@@ -6,6 +6,7 @@ use App\Models\Blog;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class BlogController extends Controller
@@ -32,18 +33,24 @@ class BlogController extends Controller
             'title' => 'required|string',
             'body' => 'required|string',
             'categories' => 'required|array',
-            'categories.*' => 'exists:categories,id'
+            'categories.*' => 'exists:categories,id',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $slug = Str::slug($request->title);
+        $blog = new Blog();
+        $blog->title = $request->title;
+        $blog->body = $request->body;
 
-        $blog = Blog::create([
-            'title' => $request->title,
-            'slug' => $slug,
-            'user_id' => Auth::id(),
-            'body' => $request->body
-        ]);
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('blog_images', 'public');
+            $blog->photo = $path;
+        }
 
+        $blog->slug = Str::slug($request->title);
+
+        $blog->user_id = Auth::id();
+
+        $blog->save();
 
         $blog->categories()->attach($request->categories);
 

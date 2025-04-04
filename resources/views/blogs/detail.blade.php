@@ -5,6 +5,8 @@
         .body {
             max-width: 40rem;
             margin: 2rem auto;
+            background-color: #ffffff;
+            padding: 1rem;
         }
 
         .badge-category {
@@ -26,8 +28,13 @@
         @foreach ($blog->categories as $category)
             <span class="badge-category">{{ $category->name }}</span>
         @endforeach
-        <img src="https://dummyimage.com/200x200/000/fff" width="600" height="400" class="card-img-top mt-4" alt="...">
-        <p style="margin-top: 1rem;">{{ $blog->body }}</p>
+        @php
+            $profileImage = $blog->photo
+                ? asset('storage/' . $blog->photo)
+                : asset('https://dummyimage.com/200x200/000/fff');
+        @endphp <img src="{{ $profileImage }}" alt="Bootstrap" style="margin: 1rem auto; display: flex; "
+            width="300px">
+        <p style="margin-top: 1rem; ">{{ $blog->body }}</p>
         <a href="{{ route('home') }}" class="btn">Back</a>
     </div>
 @endsection

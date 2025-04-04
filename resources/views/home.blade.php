@@ -15,6 +15,17 @@
             /* display: flex; */
         }
 
+        .img-head {
+            width: 100%;
+            height: 12rem;
+        }
+
+        .btn-read {
+            position: absolute;
+            left: 0.5rem;
+            bottom: 0.1rem;
+        }
+
 
         .cat {
             border-radius: 0.3rem;
@@ -27,10 +38,13 @@
             border: 1px solid rgb(241, 89, 89);
             border-radius: 0.3rem;
             padding: 0.2rem 1rem;
+
         }
 
         .cards {
             border: 1px solid #000000;
+            height: 23rem;
+            position: relative;
         }
 
         .cards-body {
@@ -141,12 +155,18 @@
                 <div class="card-container">
                     @foreach ($blogs as $blog)
                         <div class="cards">
-                            <img src="https://dummyimage.com/200x200/000/fff" width="200" height="250"
-                                class="card-img-top" alt="...">
+                            @php
+                                $profileImage = $blog->photo
+                                    ? asset('storage/' . $blog->photo)
+                                    : asset('https://dummyimage.com/200x200/000/fff');
+                            @endphp <img src="{{ $profileImage }}" alt="Bootstrap" class="img-head">
                             <div class="cards-body">
+                                @foreach ($blog->categories as $category)
+                                    <span class="badge-category">{{ $category->name }}</span>
+                                @endforeach
                                 <h4>{{ $blog->title }}</h4>
                                 <p>{{ Str::limit($blog->body, 100) }}</p>
-                                <a class="btn" href="{{ route('blog.show', $blog->slug) }}">Read more...</a>
+                                <a class="btn-read" href="{{ route('blog.show', $blog->slug) }}">Read more...</a>
                             </div>
                         </div>
                     @endforeach

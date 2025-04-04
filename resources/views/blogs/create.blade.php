@@ -3,7 +3,10 @@
 @section('content')
     <div class="card mt-5">
         <div class="card-body">
-            <form id="blogForm">
+            <form id="blogForm" enctype="multipart/form-data">
+
+
+
                 <div class="mb-3">
                     <label for="title" class="form-label">title</label>
                     <input type="text" class="form-control" name="title" id="title">
@@ -28,6 +31,11 @@
                     <textarea class="form-control" name="body" id="body" rows="3"></textarea>
                 </div>
 
+                <div class="mb-3">
+                    <label for="photo" class="form-label">Image</label>
+                    <input class="form-control" type="file" name="photo" accept="image/*" id="photo">
+                </div>
+
                 <button type="submit" class="btn btn-primary w-100">Submit</button>
             </form>
         </div>
@@ -48,11 +56,16 @@
             $('#blogForm').submit(function(e) {
                 e.preventDefault()
 
+                let form = this;
+                let formData = new FormData(form);
+
                 $.ajax({
                     url: "{{ route('store.blog') }}",
                     type: "POST",
-                    data: $(this).serialize(),
+                    data: formData,
                     dataType: 'json',
+                    contentType: false,
+                    processData: false,
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
