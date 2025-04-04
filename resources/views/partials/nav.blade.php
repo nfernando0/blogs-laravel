@@ -23,8 +23,8 @@
                                         ? asset('storage/' . Auth::user()->photo)
                                         : asset('https://dummyimage.com/200x200/000/fff');
                                 @endphp
-                                <img src="{{ $profileImage }}" class="rounded-circle" alt="Bootstrap" width="35"
-                                    height="35">
+                                <img src="{{ $profileImage }}" class="rounded-circle" alt="Bootstrap" width="40"
+                                    height="40">
                             </div>
                         </a>
                         <ul class="dropdown-menu">

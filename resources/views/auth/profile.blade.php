@@ -54,7 +54,7 @@
                                 ? asset('storage/' . Auth::user()->photo)
                                 : asset('https://dummyimage.com/200x200/000/fff');
                         @endphp
-                        <img src="{{ $profileImage }}" alt="Bootstrap" width="200" height="200">
+                        <img src="{{ $profileImage }}" alt="Bootstrap" width="255" height="200">
                     </div>
                     <input type="file" id="photo" name="photo" disabled accept="image/*"
                         style="display: flex; justify-content: center" />
